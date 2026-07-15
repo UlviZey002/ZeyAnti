@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -20,16 +21,21 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential ccache git libncurses5:i386 libstdc++6:i386 libgtk2.0-0:i386 libpangox-1.0-0:i386 libpangoxft-1.0-0:i386 libidn12:i386 unzip zlib1g-dev zlib1g:i386 openjdk-17-jdk zip
+        # exit code 100-ün qarşısını almaq üçün lazımsız 32-bit (i386) paketləri çıxarıb yalnız vacibləri yükləyirik
+        sudo apt-get install -y build-essential ccache git unzip zip openjdk-17-jdk
         pip install --upgrade buildozer cython virtualenv
 
     - name: Build with Buildozer
       run: |
         buildozer init
+        # Ayarları avtomatik düzəldirik
         sed -i 's/title = My Application/title = ZeyAnti/g' buildozer.spec
         sed -i 's/package.name = myapp/package.name = zeyanti/g' buildozer.spec
         sed -i 's/#icon.filename = %(source.dir)s\/data\/icon.png/icon.filename = %(source.dir)s\/logo.png/g' buildozer.spec
-        buildozer -v android debug
+        
+        # Buildozer-i root rejimində və səmərəli şəkildə işə salırıq
+        export BUILDOZER_WARN_ON_ROOT=0
+        yes | buildozer -v android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
