@@ -21,21 +21,20 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        # exit code 100-ün qarşısını almaq üçün lazımsız 32-bit (i386) paketləri çıxarıb yalnız vacibləri yükləyirik
         sudo apt-get install -y build-essential ccache git unzip zip openjdk-17-jdk
-        pip install --upgrade buildozer cython virtualenv
+        # XƏTANIN HƏLLİ: Kivy üçün Cython versiyası mütləq 3.0.0-dan kiçik olmalıdır!
+        pip install --upgrade buildozer "cython<3.0.0" virtualenv
 
     - name: Build with Buildozer
       run: |
         buildozer init
-        # Ayarları avtomatik düzəldirik
         sed -i 's/title = My Application/title = ZeyAnti/g' buildozer.spec
         sed -i 's/package.name = myapp/package.name = zeyanti/g' buildozer.spec
         sed -i 's/#icon.filename = %(source.dir)s\/data\/icon.png/icon.filename = %(source.dir)s\/logo.png/g' buildozer.spec
         
-        # Buildozer-i root rejimində və səmərəli şəkildə işə salırıq
         export BUILDOZER_WARN_ON_ROOT=0
-        yes | buildozer -v android debug
+        # -v parametrini sildik ki, GitHub logları çox uzun olub kəsilməsin
+        yes | buildozer android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
