@@ -37,8 +37,8 @@ jobs:
           sed -i 's/package.name = myapp/package.name = zeyanti/g' buildozer.spec
           sed -i 's|#icon.filename = %(source.dir)s/data/icon.png|icon.filename = %(source.dir)s/logo.png|g' buildozer.spec
           
-          # Kivy-nin xətasız 2.3.0 versiyasını və ən sağlam Android yığıcısını (master) məcbur edirik
-          sed -i 's/requirements = python3,kivy/requirements = python3,kivy==2.3.0/g' buildozer.spec
+          # HƏLL YOLU: Həm Python 3.11-i, həm də Kivy 2.3.0-ı tam olaraq kilidləyirik!
+          sed -i 's/requirements = python3,kivy/requirements = python3==3.11,kivy==2.3.0/g' buildozer.spec
           echo "p4a.branch = master" >> buildozer.spec
           
           export BUILDOZER_WARN_ON_ROOT=0
